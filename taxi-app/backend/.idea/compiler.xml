@@ -12,6 +12,7 @@
         <module name="communication" />
         <module name="ride" />
         <module name="user" />
+        <module name="discovery" />
       </profile>
       <profile name="Annotation profile for admin" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -30,6 +31,7 @@
       <module name="admin" options="-parameters" />
       <module name="code-with-quarkus" options="-parameters" />
       <module name="communication" options="-parameters" />
+      <module name="discovery" options="-parameters" />
       <module name="driver" options="-parameters" />
       <module name="gateway" options="-parameters" />
       <module name="ride" options="-parameters" />

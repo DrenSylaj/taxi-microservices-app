@@ -1,0 +1,29 @@
+#eureka:
+#  instance:
+#    name: users
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
+
+server:
+  port: 8111
+spring:
+  cloud:
+    config:
+      enabled: false
+    import-check:
+      enabled: false
+  profiles:
+    active: native
+  application:
+    name: users
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/users
+    username: postgres
+    password: dren123
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect

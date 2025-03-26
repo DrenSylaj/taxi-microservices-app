@@ -1,0 +1,75 @@
+package com.taxi.user.services;
+
+import com.taxi.user.dto.UserDTO;
+import com.taxi.user.entities.Role;
+import com.taxi.user.entities.User;
+import com.taxi.user.exceptions.UserAlreadyExistsException;
+import com.taxi.user.repository.UserRepository;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+    private final UserRepository userRepository;
+
+    public Optional<User> getUserById(Long id){
+        return userRepository.findById(id);
+    }
+
+    public void deleteUserById(Long id){
+        if(userRepository.existsById(id)){
+            userRepository.deleteById(id);
+        }
+    }
+
+    @Transactional
+    public Optional<User> updateUserById(@Valid UserDTO updatedUser, Long id) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    if(updatedUser.getEmail() != null && !user.getEmail().equals(updatedUser.getEmail())){
+                        userRepository.findByEmail(updatedUser.getEmail()).ifPresent(u -> {
+                            throw new UserAlreadyExistsException("Email already in use");
+                        });
+                    }
+                    user.setFirstName(updatedUser.getFirstName());
+                    user.setLastName(updatedUser.getLastName());
+                    user.setEmail(updatedUser.getEmail());
+                    user.setPassword(updatedUser.getPassword());
+                    user.setCity(updatedUser.getCity());
+                    user.setAddress(updatedUser.getAddress());
+                    user.setBirthDate(updatedUser.getBirthDate());
+                    user.setPhoneNumber(updatedUser.getPhoneNumber());
+                    user.setGender(updatedUser.isGender());
+
+                    return userRepository.save(user);
+                });
+    }
+
+    @Transactional
+    public User createUser(@Valid UserDTO userDTO) {
+        if(userRepository.findByEmail(userDTO.getEmail()).isPresent()){
+            throw new UserAlreadyExistsException("Email already in use");
+        }
+
+        User user = User.builder()
+                .firstName(userDTO.getFirstName())
+                .lastName(userDTO.getLastName())
+                .email(userDTO.getEmail())
+                .password(userDTO.getPassword())
+                .address(userDTO.getAddress())
+                .city(userDTO.getCity())
+                .gender(userDTO.isGender())
+                .birthDate(userDTO.getBirthDate())
+                .role(Role.COSTUMER)
+                .build();
+
+        return userRepository.save(user);
+    }
+
+
+}

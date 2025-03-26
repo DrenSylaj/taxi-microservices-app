@@ -7,6 +7,7 @@ import com.taxi.user.exceptions.UserAlreadyExistsException;
 import com.taxi.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Optional<User> getUserById(Long id){
         return userRepository.findById(id);
@@ -39,7 +41,7 @@ public class UserService {
                     user.setFirstName(updatedUser.getFirstName());
                     user.setLastName(updatedUser.getLastName());
                     user.setEmail(updatedUser.getEmail());
-                    user.setPassword(updatedUser.getPassword());
+                    user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     user.setCity(updatedUser.getCity());
                     user.setAddress(updatedUser.getAddress());
                     user.setBirthDate(updatedUser.getBirthDate());
@@ -60,7 +62,7 @@ public class UserService {
                 .firstName(userDTO.getFirstName())
                 .lastName(userDTO.getLastName())
                 .email(userDTO.getEmail())
-                .password(userDTO.getPassword())
+                .password(passwordEncoder.encode(userDTO.getPassword()))
                 .address(userDTO.getAddress())
                 .city(userDTO.getCity())
                 .gender(userDTO.isGender())

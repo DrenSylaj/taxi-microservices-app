@@ -27,5 +27,6 @@ public class User{
     private String city;
     private String address;
     private LocalDate birthDate;
+    @Enumerated(EnumType.STRING)
     private Role role = Role.COSTUMER;
 }

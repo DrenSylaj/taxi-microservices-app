@@ -1,0 +1,11 @@
+spring:
+  application:
+  name: ride
+  data:
+    mongodb:
+      username: root
+      password: password
+      host: localhost
+      port: 27017
+      database: mongodb
+      authentication-database: admin

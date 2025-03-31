@@ -1,0 +1,29 @@
+eureka:
+  client:
+    enabled: false
+  server:
+    enabled: false
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      routes:
+        - id: users
+          uri: http://localhost:8111
+          predicates:
+            - Path=/api/v1/user/**
+
+        - id: auth
+          uri: http://localhost:8111
+          predicates:
+            - Path=/api/v1/auth/**
+
+server:
+  port: 8222
+
+security:
+  secret:
+    key: "598CCC87F435776673862D86F8B93B2B67A0C2CEA75F91CF89A285D971E7C12F"

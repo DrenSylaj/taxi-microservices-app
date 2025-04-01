@@ -21,7 +21,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/Drivers
     username: postgres
-    password: dren123
+    password: altin1234
   jpa:
     hibernate:
       ddl-auto: create
@@ -30,4 +30,4 @@ spring:
 
 
 user-service:
-  url: http://localhost:8111/user
+  url: http://localhost:8111/api/v1/user

@@ -1,11 +1,42 @@
+eureka:
+  instance:
+    name: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+
+server:
+  port: 8444
 spring:
+  cloud:
+    config:
+      enabled: false
+    import-check:
+      enabled: false
+  profiles:
+    active: native
   application:
-  name: ride
-  data:
-    mongodb:
-      username: root
-      password: password
-      host: localhost
-      port: 27017
-      database: mongodb
-      authentication-database: admin
+    name: ride
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/rides
+    username: postgres
+    password: dren123
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+#  data:
+#    mongodb:
+#      username: root
+#      password: password
+#      host: localhost
+#      port: 27017
+#      database: mongodb
+#      authentication-database: admin
+
+user-service:
+  url: http://localhost:8111/user

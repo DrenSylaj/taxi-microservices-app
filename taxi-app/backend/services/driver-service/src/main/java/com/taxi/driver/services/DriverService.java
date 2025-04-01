@@ -3,9 +3,11 @@ package com.taxi.driver.services;
 import com.taxi.driver.clients.UserClient;
 import com.taxi.driver.dto.DriverDTO;
 import com.taxi.driver.dto.UserDTO;
+import com.taxi.driver.entities.Car;
 import com.taxi.driver.entities.Driver;
 import com.taxi.driver.entities.DriverStatus;
 import com.taxi.driver.exceptions.ConflictException;
+import com.taxi.driver.repository.CarRepository;
 import com.taxi.driver.repository.DriverRepository;
 import feign.FeignException;
 import jakarta.transaction.Transactional;
@@ -20,7 +22,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class DriverService {
+
     private final DriverRepository repository;
+    private final CarRepository carRepository;
     private final UserClient userClient;
 
 
@@ -40,14 +44,20 @@ public class DriverService {
             throw new ConflictException("Driver with this user ID already exists!");
         }
 
+
+        Car car = Car.builder()
+                .model(driverDTO.getCarModel())
+                .plateNumber(driverDTO.getCarPlate())
+                .year(driverDTO.getCarYear())
+                .color(driverDTO.getCarColor())
+                .build();
+        car = carRepository.save(car);
+
         Driver driver = Driver.builder()
                 .userId(driverDTO.getUserId())
                 .licenseNumber(driverDTO.getLicenseNumber())
-                .vehicleModel(driverDTO.getVehicleModel())
-                .vehiclePlate(driverDTO.getVehiclePlate())
-                .vehicleYear(driverDTO.getVehicleYear())
-                .vehicleColor(driverDTO.getVehicleColor())
                 .status(DriverStatus.OFFLINE)
+                .car(car)
                 .build();
 
         return repository.save(driver);
@@ -67,10 +77,13 @@ public class DriverService {
         return repository.findById(id)
                 .map(driver -> {
                     driver.setLicenseNumber(updatedDriver.getLicenseNumber());
-                    driver.setVehicleModel(updatedDriver.getVehicleModel());
-                    driver.setVehiclePlate(updatedDriver.getVehiclePlate());
-                    driver.setVehicleColor(updatedDriver.getVehicleColor());
-                    driver.setVehicleYear(updatedDriver.getVehicleYear());
+                    Car car = driver.getCar();
+                    car.setModel(updatedDriver.getCarModel());
+                    car.setPlateNumber(updatedDriver.getCarPlate());
+                    car.setYear(updatedDriver.getCarYear());
+                    car.setColor(updatedDriver.getCarColor());
+
+                    carRepository.save(car);
                     return repository.save(driver);
                 });
     }

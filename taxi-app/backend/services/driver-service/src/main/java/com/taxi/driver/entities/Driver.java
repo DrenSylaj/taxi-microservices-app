@@ -13,18 +13,19 @@ import lombok.*;
 public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private Long userId;
 
     private String licenseNumber;
-    private String vehicleModel;
-    private String vehiclePlate;
-    private int vehicleYear;
-    private String vehicleColor;
 
     @Enumerated(EnumType.STRING)
     private DriverStatus status = DriverStatus.OFFLINE;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "car_id", referencedColumnName = "id")
+    private Car car;
+
 }
 

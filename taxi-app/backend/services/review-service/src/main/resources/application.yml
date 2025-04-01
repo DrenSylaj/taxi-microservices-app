@@ -42,4 +42,4 @@ spring:
 user-service:
     url: http://localhost:8111/api/v1/user
 driver-service:
-    url: http://localhost:8211/driver
+    url: http://localhost:8211/api/v1/driver

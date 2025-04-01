@@ -26,6 +26,7 @@ public class RideService {
     private final RideRepository rideRepository;
     private final UserClient userClient;
     private final DriverClient driverClient;
+    private final OSMDistanceCalculator distanceCalculator;
 
     public UserDto getUserById(Long userId){
         return userClient.getUserById(userId);
@@ -69,6 +70,7 @@ public class RideService {
 
     @Transactional
     public Ride createRide(@Valid RideDto ride){
+        
         var ride1 = Ride.builder()
                 .customerId(ride.getCustomerId())
                 .driverId(ride.getDriverId())
@@ -83,7 +85,8 @@ public class RideService {
                 .startLongitude(ride.getStartLongitude())
                 .endLatitude(ride.getEndLatitude())
                 .endLongitude(ride.getEndLongitude())
-                .distance(ride.getDistance())
+                .distance(distanceCalculator.getDistanceORM(ride.getStartLatitude(), ride.getStartLongitude(),
+                        ride.getEndLatitude(), ride.getEndLongitude()))
                 .build();
 
         return rideRepository.save(ride1);
@@ -117,7 +120,8 @@ public class RideService {
         ride.setStartLongitude(rideDto.getStartLongitude());
         ride.setEndLatitude(rideDto.getEndLatitude());
         ride.setEndLongitude(rideDto.getEndLongitude());
-        ride.setDistance(rideDto.getDistance());
+        ride.setDistance(distanceCalculator.getDistanceORM(rideDto.getStartLatitude(), rideDto.getStartLongitude(),
+                rideDto.getEndLatitude(), rideDto.getEndLongitude()));
 
 
         return rideRepository.save(ride);
@@ -132,6 +136,22 @@ public class RideService {
             Status.COMPLETED, Set.of(),
             Status.CANCELLED, Set.of()
     );
+
+    //Haversine Formula
+//    public double calculateDistance(double latitude1, double longitude1, double latitude2, double longitude2){
+//        int radiusOfEarth = 6371; //In Km
+//        double p = Math.PI / 180; //Convert degrees to radians
+//        double dlat = (latitude2 - latitude1) * p / 2;
+//        double dlon = (longitude2 - longitude1) * p /2;
+//
+//        double a = Math.sin(dlat) * Math.sin(dlat) +
+//                Math.cos(latitude1 * p) * Math.cos(latitude2 * p)
+//                        * Math.sin(dlon) * Math.sin(dlon);
+//
+//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+//
+//        return radiusOfEarth * c;
+//    }
 
     @Transactional
     public Ride updateStatus(Status status, Long rideId) {

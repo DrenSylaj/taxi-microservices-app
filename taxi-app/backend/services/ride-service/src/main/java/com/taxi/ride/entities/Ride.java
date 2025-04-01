@@ -39,5 +39,5 @@ public class Ride {
     private double endLatitude;
     private double endLongitude;
 
-    private BigDecimal distance;
+    private double distance;
 }

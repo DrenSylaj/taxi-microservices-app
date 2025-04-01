@@ -20,7 +20,7 @@ public class ChatRoomService {
                         var chatID = createChat(senderID, recipientID);
                     }
                     return Optional.empty();
-                })
+                });
     }
 
     public Long createChat(Long senderID, Long recipientID){

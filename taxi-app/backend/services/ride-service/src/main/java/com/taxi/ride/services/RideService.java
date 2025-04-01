@@ -1,5 +1,6 @@
 package com.taxi.ride.services;
 
+import com.taxi.ride.clients.DriverClient;
 import com.taxi.ride.clients.UserClient;
 import com.taxi.ride.dto.RideDto;
 import com.taxi.ride.dto.UserDto;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class RideService {
     private final RideRepository rideRepository;
     private final UserClient userClient;
+    private final DriverClient driverClient;
 
     public UserDto getUserById(Long userId){
         return userClient.getUserById(userId);
@@ -145,12 +147,20 @@ public class RideService {
         }
 
         switch (status){
+            case ACCEPTED -> {
+                ride.setTimeAccepted(LocalDateTime.now());
+                driverClient.updateStatus("ONRIDE", ride.getDriverId());
+            }
             case STARTED -> ride.setTimeStarted(LocalDateTime.now());
-            case ACCEPTED -> ride.setTimeAccepted(LocalDateTime.now());
             case ARRIVED -> ride.setTimeArrived(LocalDateTime.now());
-            case CANCELLED -> ride.setTimeCancelled(LocalDateTime.now());
-            case COMPLETED -> ride.setTimeCompleted(LocalDateTime.now());
-
+            case CANCELLED -> {
+                ride.setTimeCancelled(LocalDateTime.now());
+                driverClient.updateStatus("FREE", ride.getDriverId());
+            }
+            case COMPLETED -> {
+                ride.setTimeCompleted(LocalDateTime.now());
+                driverClient.updateStatus("FREE", ride.getDriverId());
+            }
         }
 
         ride.setStatus(status);

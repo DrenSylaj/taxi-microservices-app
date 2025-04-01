@@ -26,7 +26,7 @@ spring:
     password: dren123
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 #  data:
@@ -39,4 +39,6 @@ spring:
 #      authentication-database: admin
 
 user-service:
-  url: http://localhost:8111/user
+  url: http://localhost:8111/api/v1/user
+driver_service:
+  url: http://localhost:8211/api/v1/driver

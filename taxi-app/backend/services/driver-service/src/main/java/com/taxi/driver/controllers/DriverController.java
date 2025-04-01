@@ -9,18 +9,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/driver")
+@RequestMapping("/api/v1/driver")
 public class DriverController {
 
     private final DriverService driverService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Driver> getDriverById(@PathVariable Long id) {
-        return driverService.getDriverById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public Driver getDriverById(@PathVariable Long id) {
+        return driverService.getDriverById(id);
     }
 
     @PostMapping
@@ -40,5 +40,13 @@ public class DriverController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDriver(@PathVariable Long id) {
         driverService.deleteDriverById(id);
+    }
+
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<Driver> updateStatus(@RequestBody String status, @PathVariable Long id){
+        return driverService.updateStatus(status, id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

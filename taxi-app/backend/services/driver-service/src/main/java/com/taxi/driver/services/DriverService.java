@@ -24,8 +24,8 @@ public class DriverService {
     private final UserClient userClient;
 
 
-    public Optional<Driver> getDriverById(long id) {
-        return repository.findById(id);
+    public Driver getDriverById(long id) {
+        return repository.findById(id).orElseThrow(() -> new NotFoundException("Cannot find the user with id: "+id));
     }
 
     @Transactional
@@ -51,6 +51,15 @@ public class DriverService {
                 .build();
 
         return repository.save(driver);
+    }
+
+    @Transactional
+    public Optional<Driver> updateStatus(String status, Long id){
+        var driver = getDriverById(id);
+        DriverStatus status1 = DriverStatus.valueOf(status.toUpperCase().trim());
+        driver.setStatus(status1);
+
+        return Optional.of(repository.save(driver));
     }
 
     @Transactional

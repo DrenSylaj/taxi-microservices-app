@@ -12,7 +12,7 @@ import java.util.concurrent.RecursiveTask;
 @RequiredArgsConstructor
 public class ChatRoomService {
     private final ChatRoomRepository chatrepo;
-    public Optional<Long> getChatRoomID(Long senderID, Long recipientID, boolean createNewROowIfNotExists){
+    public Optional<String> getChatRoomID(String senderID, String recipientID, boolean createNewROowIfNotExists){
         return chatrepo.findBySenderIDAndRecipientID(senderID, recipientID)
                 .map(ChatRoom::getChatID)
                 .or(() -> {
@@ -23,7 +23,8 @@ public class ChatRoomService {
                 });
     }
 
-    public Long createChat(Long senderID, Long recipientID){
+    public String createChat(String senderID, String recipientID){
+        return "";
 //        var chatID = 
     }
 }

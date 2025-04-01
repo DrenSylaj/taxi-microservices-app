@@ -11,7 +11,7 @@ public class Chat {
     @Id
     private String id;
     private Long udhetimiId;
-    private List<Message> messages = new ArrayList<>();
+//    private List<Message> messages = new ArrayList<>();
 
     public Chat(Long udhetimiId) {
         this.udhetimiId = udhetimiId;

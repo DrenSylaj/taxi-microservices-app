@@ -4,7 +4,7 @@ import com.taxi.communication.repository.UserRepository;
 import com.taxi.communication.user.Status;
 import com.taxi.communication.user.User;
 import lombok.RequiredArgsConstructor;
-import lombok.var;
+//import lombok.var;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

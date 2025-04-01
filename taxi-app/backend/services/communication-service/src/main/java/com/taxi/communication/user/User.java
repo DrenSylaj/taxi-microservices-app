@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class User {
     @Id
-    private Long id;
+    private String id;
     private String fullName;
     private Status status;
 }

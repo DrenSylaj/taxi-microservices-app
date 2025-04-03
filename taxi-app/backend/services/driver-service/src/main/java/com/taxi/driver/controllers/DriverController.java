@@ -1,7 +1,9 @@
 package com.taxi.driver.controllers;
 
 import com.taxi.driver.dto.DriverDTO;
+import com.taxi.driver.dto.VerificationDTO;
 import com.taxi.driver.entities.Driver;
+import com.taxi.driver.entities.Verification;
 import com.taxi.driver.services.DriverService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +50,22 @@ public class DriverController {
         return driverService.updateStatus(status, id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/apply")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> applyForDriver(@RequestBody VerificationDTO verificationDTO) {
+        driverService.applyForDriver(verificationDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Driver application submitted successfully");
+    }
+
+    @PostMapping("/approve/{id}")
+    public Driver approveVerification(@PathVariable Long id){
+        return driverService.approveVerification(id);
+    }
+
+    @PutMapping("/reject/{id}")
+    public Verification rejectVerification(@PathVariable Long id){
+        return driverService.rejectVerification(id);
     }
 }

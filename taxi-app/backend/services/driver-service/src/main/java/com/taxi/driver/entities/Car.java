@@ -18,6 +18,9 @@ public class Car {
     private Long id;
 
     @Column(nullable = false)
+    private Long userId;
+
+    @Column(nullable = false)
     private String model;
 
     @Column(nullable = false, unique = true)
@@ -30,4 +33,5 @@ public class Car {
     private int year;
 
     private String color;
+
 }

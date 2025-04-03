@@ -6,6 +6,7 @@ import com.taxi.user.entities.User;
 import com.taxi.user.exceptions.UserAlreadyExistsException;
 import com.taxi.user.repository.UserRepository;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -67,8 +68,18 @@ public class UserService {
                 .city(userDTO.getCity())
                 .gender(userDTO.isGender())
                 .birthDate(userDTO.getBirthDate())
-                .role(Role.COSTUMER)
+                .role(Role.CUSTOMER)
                 .build();
+
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User updateRole(String role, Long userId){
+        User user = getUserById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id: "+userId));
+
+        user.setRole(Role.valueOf(role));
 
         return userRepository.save(user);
     }

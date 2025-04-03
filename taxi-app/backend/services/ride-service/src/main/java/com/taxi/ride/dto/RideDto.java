@@ -37,9 +37,13 @@ public class RideDto {
     private LocalDateTime timeStarted;
     private LocalDateTime timeCompleted;
 
+    @NotBlank(message = "Latitude1 is required!")
     private double startLatitude;
+    @NotBlank(message = "Longitude1 is required!")
     private double startLongitude;
+    @NotBlank(message = "Latitude2 is required!")
     private double endLatitude;
+    @NotBlank(message = "Longitude2 is required!")
     private double endLongitude;
 
     private double distance;

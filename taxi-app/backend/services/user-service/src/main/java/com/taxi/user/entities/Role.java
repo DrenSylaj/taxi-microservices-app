@@ -2,6 +2,8 @@ package com.taxi.user.entities;
 
 public enum Role {
     ADMIN,
-    COSTUMER,
-    DRIVER
+    CUSTOMER,
+    POTENTIAL_DRIVER,
+    DRIVER,
+    SUSPENDED_DRIVER
 }

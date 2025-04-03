@@ -1,5 +1,6 @@
 package com.taxi.user.dto;
 
+import com.taxi.user.entities.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
@@ -30,6 +31,8 @@ public class UserDTO {
 
     @Past(message = "The birthdate must be in the past")
     private LocalDate birthDate;
+
+    private Role role;
 
     private String phoneNumber;
 

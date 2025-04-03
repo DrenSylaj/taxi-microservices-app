@@ -1,15 +1,12 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import LocationTracker from './LocationTracker'
+import { useState } from "react";
+import "./App.css";
+import axios from "axios";
+import LoggedIn from "./auth/LoggedIn";
+import SignIn from "./auth/SignIn";
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <LocationTracker />
-  )
+  const [loggedIn, setLoggedIn] = useState(false);
+  return <>{loggedIn ? <LoggedIn /> : <SignIn />}</>;
 }
 
-export default App
+export default App;

@@ -1,4 +1,26 @@
+eureka:
+  instance:
+    name: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+server:
+  port: 8444
+
 spring:
+  websocket:
+    path: /ws
+  cloud:
+    config:
+      enabled: false
+    import-check:
+      enabled: false
+  profiles:
+    active: native
+  application:
+    name: ride
+
   data:
     mongodb:
       username: root
@@ -8,5 +30,6 @@ spring:
       database: communicationdb
       authentication-database: admin
 
-server:
-  port: 8088
+user-service:
+#  url: http://localhost:8111/user
+  url: http://localhost:8111

@@ -51,6 +51,20 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+
+  initdb:
+    image: postgres:latest
+    container_name: postgres-init
+    depends_on:
+      - postgres
+    environment:
+      PGPASSWORD: dren123
+    entrypoint: |
+      bash -c "until pg_isready -h postgres; do sleep 1; done; 
+               psql -h postgres -U postgres -c 'CREATE DATABASE Drivers;'"
+    restart: "no"
+
 volumes:
   mongo: { }
   redis_data:

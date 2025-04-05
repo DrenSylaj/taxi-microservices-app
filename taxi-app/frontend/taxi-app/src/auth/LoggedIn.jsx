@@ -1,9 +1,33 @@
-import React from 'react'
+import React from "react";
+
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useParams,
+} from "react-router-dom";
+
+import SideBar from "../Components/SideBar";
+import pathArray from "../Routes/Path.jsx";
 
 function LoggedIn() {
   return (
-    <div>LoggedIn</div>
-  )
+    <>
+      <SideBar patharray={pathArray}>
+        <Routes>
+          {pathArray.flatMap((category) =>
+            category.components.map((item) => (
+              <Route
+                key={item.path}
+                path={item.path}
+                element={item.components}
+              />
+            ))
+          )}
+        </Routes>
+      </SideBar>
+    </>
+  );
 }
 
-export default LoggedIn
+export default LoggedIn;

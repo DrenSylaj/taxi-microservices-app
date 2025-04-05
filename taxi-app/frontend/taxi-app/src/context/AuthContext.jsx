@@ -1,11 +1,12 @@
 import { createContext, useContext } from "react";
 import axios from "axios";
 import Cookies from 'js-cookie'
+import { getAccessToken } from "../jsMethods";
 
 const AxiosContext = createContext(null);
 
 export const AxiosProvider = ({ children }) => {
-  const accessToken = Cookies.get("access_token"); // aksess tokeni
+  const accessToken = getAccessToken(); // aksess tokeni
   const baseUrl = "http://localhost:8080/api/"; // URL e Backendit
 
   const authAxios = axios.create({

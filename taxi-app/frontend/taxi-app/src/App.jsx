@@ -1,11 +1,13 @@
 import { useState } from "react";
 import "./App.css";
-import axios from "axios";
 import LoggedIn from "./auth/LoggedIn";
 import SignIn from "./auth/SignIn";
 
+import "./App.css";
+
+
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
   return <>{loggedIn ? <LoggedIn /> : <SignIn />}</>;
 }
 

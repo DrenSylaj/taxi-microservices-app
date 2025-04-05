@@ -33,7 +33,9 @@ public class User implements UserDetails {
     private String address;
     private LocalDate birthDate;
     @Enumerated(EnumType.STRING)
-    private Role role = Role.COSTUMER;
+    private Role role = Role.CUSTOMER;
+    @OneToMany
+    private List<Token> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

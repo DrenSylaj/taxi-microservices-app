@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
@@ -42,5 +40,10 @@ public class UserController {
         return userService.updateUserById(user, id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/role/{id}")
+    public User updateRole(@RequestBody String role, @PathVariable Long id){
+        return userService.updateRole(role, id);
     }
 }

@@ -70,7 +70,7 @@ public class RideService {
 
     @Transactional
     public Ride createRide(@Valid RideDto ride){
-        
+
         var ride1 = Ride.builder()
                 .customerId(ride.getCustomerId())
                 .driverId(ride.getDriverId())

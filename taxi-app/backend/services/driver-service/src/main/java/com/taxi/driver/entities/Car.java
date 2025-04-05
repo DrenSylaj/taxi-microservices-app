@@ -23,10 +23,10 @@ public class Car {
     @Column(nullable = false)
     private String model;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private int numberOfSeats;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String plateNumber;
 
     @Column(nullable = false)

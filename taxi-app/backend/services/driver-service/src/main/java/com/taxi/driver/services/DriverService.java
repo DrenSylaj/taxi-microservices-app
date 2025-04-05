@@ -33,7 +33,7 @@ public class DriverService {
 
 
     public Driver getDriverById(long id) {
-        return repository.findById(id).orElseThrow(() -> new NotFoundException("Cannot find the user with id: "+id));
+        return repository.findById(id).orElseThrow(() -> new    NotFoundException("Cannot find the user with id: "+id));
     }
 
     @Transactional
@@ -51,6 +51,7 @@ public class DriverService {
 
         Car car = Car.builder()
                 .model(driverDTO.getCarModel())
+                .userId(user.getId())
                 .plateNumber(driverDTO.getCarPlate())
                 .year(driverDTO.getCarYear())
                 .color(driverDTO.getCarColor())
@@ -72,6 +73,15 @@ public class DriverService {
     @Transactional
     public Optional<Driver> updateStatus(String status, Long id){
         var driver = getDriverById(id);
+        DriverStatus status1 = DriverStatus.valueOf(status.toUpperCase().trim());
+        driver.setStatus(status1);
+
+        return Optional.of(repository.save(driver));
+    }
+
+    @Transactional
+    public Optional<Driver> updateStatusByUserId(String status, Long id){
+        var driver = repository.findByUserId(id);
         DriverStatus status1 = DriverStatus.valueOf(status.toUpperCase().trim());
         driver.setStatus(status1);
 
@@ -167,5 +177,11 @@ public class DriverService {
         if (repository.existsById(id)) {
             repository.deleteById(id);
         }
+    }
+
+    public String getStatusByUserId(Long id) {
+        Driver driver = repository.findByUserId(id);
+
+        return driver.getStatus().toString();
     }
 }

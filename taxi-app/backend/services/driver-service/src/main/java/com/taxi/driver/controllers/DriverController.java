@@ -52,6 +52,18 @@ public class DriverController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/status/byUserId/{id}")
+    public ResponseEntity<Driver> updateStatusByUserId(@RequestBody String status, @PathVariable Long id){
+        return driverService.updateStatusByUserId(status, id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/getStatusByUserId/{id}")
+    public String getStatusByUserId(@PathVariable Long id) {
+        return driverService.getStatusByUserId(id);
+    }
+
     @PostMapping("/apply")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> applyForDriver(@RequestBody VerificationDTO verificationDTO) {
@@ -68,4 +80,5 @@ public class DriverController {
     public Verification rejectVerification(@PathVariable Long id){
         return driverService.rejectVerification(id);
     }
+
 }

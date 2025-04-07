@@ -10,7 +10,6 @@ export default function DriverMap({ userId }) {
   const [rideRequests, setRideRequests] = useState([]);
   const [rideOffer, setRideOffer] = useState(null);
   const [currentRide, setCurrentRide] = useState(null);
-  const routeVisibleRef = useRef(false);
   const watchId = useRef(null);
 
   const [userMarker, setUserMarker] = useState(null);
@@ -39,32 +38,41 @@ export default function DriverMap({ userId }) {
     console.log("Ride offer sent:", { userId, latitude, longitude });
   };
 
+  let routeLayerId = "route-line";
+
   const drawRoute = async (from, to) => {
-    if (routeVisibleRef.current && map.getLayer("route-line")) {
-      map.removeLayer("route-line");
-      map.removeSource("route");
-      routeVisibleRef.current = false;
-      return;
-    }
+    console.log(`from.latitude:`, from.latitude);
+    console.log(`from.longitude:`, from.longitude);
+    console.log(`to.latitude:`, to.latitude);
+    console.log(`to.longitude:`, to.longitude);
+
+    const url = `https://router.project-osrm.org/route/v1/driving/${from.latitude},${from.longitude};${to.latitude},${to.longitude}?overview=full&geometries=geojson`;
+
     try {
-      const res = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${from.longitude},${from.latitude};${to.longitude},${to.latitude}?overview=full&geometries=geojson`
-      );
-      const data = await res.json();
-      const routeGeoJSON = {
-        type: "Feature",
-        geometry: data.routes[0].geometry,
-      };
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!data.routes || data.routes.length === 0 || !currentRide) return;
+
+      const route = data.routes[0].geometry;
+
+      // Heke route paraprak nese ekziston !!
       if (map.getSource("route")) {
-        map.getSource("route").setData(routeGeoJSON);
+        map.getSource("route").setData({
+          type: "Feature",
+          geometry: route,
+        });
       } else {
         map.addSource("route", {
           type: "geojson",
-          data: routeGeoJSON,
+          data: {
+            type: "Feature",
+            geometry: route,
+          },
         });
 
         map.addLayer({
-          id: "route-line",
+          id: routeLayerId,
           type: "line",
           source: "route",
           layout: {
@@ -72,26 +80,22 @@ export default function DriverMap({ userId }) {
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#ff5733",
+            "line-color": "#0074D9",
             "line-width": 5,
           },
         });
       }
-
-      routeVisibleRef.current = true;
     } catch (err) {
-      console.error("OSRM routing error:", err);
+      console.error("Error fetching route:", err);
     }
   };
   useEffect(() => {
-    if (currentRide === null && location && client) {
+    if (location && client) {
       fetch(
         `http://localhost:8111/api/users/nearby?latitude=${location.latitude}&longitude=${location.longitude}&radiusKm=5&driverId=${userId}`
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log(currentRide);
-          console.log(data);
           setRideRequests(data);
         })
         .catch((err) => {
@@ -105,7 +109,26 @@ export default function DriverMap({ userId }) {
           }
         });
     }
-  }, [location, client, currentRide]);
+  }, [location, client]);
+
+  useEffect(() => {
+    if (location && client) {
+      fetch(
+        `http://localhost:8111/api/users/currentRideDriver?driverId=${userId}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          setCurrentRide(data);
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.error("Response error:", err.response);
+          } else if (err.request) {
+            console.error("Request error:", err.request);
+          }
+        });
+    }
+  }, [client, location]);
 
   useEffect(() => {
     if (location && !map) {
@@ -141,58 +164,88 @@ export default function DriverMap({ userId }) {
   useEffect(() => {
     if (client) {
       if (!currentRide) {
-        client.subscribe(`/topic/driver-${userId}`, (message) => {
-          const newRequest = JSON.parse(message.body);
+        const driverSub = client.subscribe(
+          `/topic/driver-${userId}`,
+          (message) => {
+            const newRequest = JSON.parse(message.body);
 
-          const existingRequest = rideRequests.find(
-            (request) => request.userId === newRequest.userId
-          );
-
-          if (existingRequest) {
-            const isDifferent =
-              existingRequest.latitude !== newRequest.latitude ||
-              existingRequest.longitude !== newRequest.longitude ||
-              existingRequest.destLatitude !== newRequest.destLatitude ||
-              existingRequest.destLongitude !== newRequest.destLongitude;
-
-            if (isDifferent) {
-              setRideRequests((prevRequests) =>
-                prevRequests.map((request) =>
-                  request.userId === newRequest.userId
-                    ? { ...request, ...newRequest }
-                    : request
-                )
-              );
-            }
-          } else {
-            setRideRequests((prevRequests) => [...prevRequests, newRequest]);
-          }
-        });
-      }
-
-      client.subscribe("/topic/remove-user", (message) => {
-        // INFO: payload osht RideOffer(userId,driverId etc...)
-        const rideOffer = JSON.parse(message.body);
-        if (userId == rideOffer.driverId) {
-          setRideRequests((prevRequests) => {
-            return prevRequests.filter(
-            (req) => 
-              req.userId === rideOffer.userId
+            // Gjeje se a ekziston rideRequest i payload n'varg.
+            // Nese Po kqyr ku po dallon, ruje nese dallon.
+            const existingRequest = rideRequests.find(
+              (request) => request.userId === newRequest.userId
             );
-          });
+            if (existingRequest) {
+              const isDifferent =
+                existingRequest.latitude !== newRequest.latitude ||
+                existingRequest.longitude !== newRequest.longitude ||
+                existingRequest.destLatitude !== newRequest.destLatitude ||
+                existingRequest.destLongitude !== newRequest.destLongitude;
+
+              if (isDifferent) {
+                setRideRequests((prevRequests) =>
+                  prevRequests.map((request) =>
+                    request.userId === newRequest.userId
+                      ? { ...request, ...newRequest }
+                      : request
+                  )
+                );
+              }
+            } else {
+              setRideRequests((prevRequests) => [...prevRequests, newRequest]);
+            }
+          }
+        );
+      }
+      const removeSub = client.subscribe("/topic/remove-user", (message) => {
+        // INFO: payload osht rideAccepted(userId,driverId etc...)
+        const rideAccepted = JSON.parse(message.body);
+        console.log("Accepted Ride:", JSON.stringify(rideAccepted, null, 2));
+        console.log(
+          "Current Ride update:",
+          JSON.stringify(currentRide, null, 2)
+        );
+        if (userId == rideAccepted.driverId) {
+          setCurrentRide(rideAccepted);
+          setRideRequests([]);
+          console.log(
+            `RideRequests of the Accepted Ride Driver: ${rideRequests}`
+          );
         } else {
           setRideRequests((prevRequests) => {
             return prevRequests.filter(
-              (req) =>
-                req.userId !== rideOffer.userId
+              (req) => req.userId !== rideAccepted.userId
             );
           });
+          console.log(`RideRequests of the other Drivers: ${rideRequests}`);
         }
-          
       });
+      // Ndegjo per ndryshime tstatusit (status)
+      const statusSub = client.subscribe(
+        `/topic/status-${userId}`,
+        (message) => {
+          const newStatus = JSON.parse(message.body);
+          console.log("Status update: ", newStatus);
+          if (
+            newStatus.status === "CANCELED" ||
+            newStatus.status === "COMPLETED"
+          ) {
+            setCurrentRide(null);
+            map.removeLayer(routeLayerId);
+          } else {
+            setCurrentRide(newStatus);
+          }
+        }
+      );
+      return () => {
+        removeSub.unsubscribe();
+        statusSub.unsubscribe();
+      };
     }
-  }, [client]);
+  }, [client, currentRide]);
 
+  // RideRequestes Marker
+  // Per qdo rideRequest qe vjen prej websocket (mrena 5km)
+  // shfaqe nmap
   useEffect(() => {
     if (!map) return;
 
@@ -235,43 +288,57 @@ export default function DriverMap({ userId }) {
     };
   }, [rideRequests, map]);
 
+  // Current ride Marker !!!
   useEffect(() => {
-    if (!map || !currentRide) return;
+    if (!map || !currentRide || !location) return;
 
-    const markers = [];
+    const from = {
+      latitude: location.longitude,
+      longitude: location.latitude,
+    };
+    const to = {
+      latitude: currentRide.destLatitude,
+      longitude: currentRide.destLongitude,
+    };
 
-    const popupContent = document.createElement("div");
-    popupContent.className = "popup-content";
+    drawRoute(from, to);
 
-    const acceptButton = document.createElement("button");
-    acceptButton.textContent = "Accepted Ride";
-    acceptButton.className = "accept-button";
-    // acceptButton.onclicrk = () => {
-    //   handleRideOffer(
-    //     currentRide.userId,
-    //     location.latitude,
-    //     location.longitude
-    //   );
-    // };
-
-    popupContent.appendChild(acceptButton);
-
-    const popup = new maplibregl.Popup({ offset: 25, closeOnClick: false })
-      .setDOMContent(popupContent)
-      .setMaxWidth("200px");
-
-    const marker = new maplibregl.Marker({ color: "red" })
+    const rideMarker = new maplibregl.Marker({ color: "red" })
       .setLngLat([currentRide.longitude, currentRide.latitude])
-      .setPopup(popup)
       .addTo(map);
 
-    markers.push(marker);
+    const popup = new maplibregl.Popup({ offset: 25 }).setText(
+      "Rider Location"
+    );
+    rideMarker.setPopup(popup);
 
     return () => {
-      markers.forEach((marker) => marker.remove());
+      rideMarker.remove();
+      if (map.getLayer(routeLayerId)) {
+        map.removeLayer(routeLayerId);
+      }
+      if (map.getSource("route")) {
+        map.removeSource("route");
+      }
     };
-  }, [currentRide, map]);
+  }, [currentRide, map, location]);
 
+  // Status update
+  const handleStatusUpdate = (status) => {
+    if (!currentRide) return;
+
+    client.publish({
+      destination: "/app/status",
+      body: JSON.stringify({ ...currentRide, status }),
+    });
+
+    if (status === "CANCELED" || "COMPLETED") {
+      setCurrentRide(null);
+      map.removeLayer(routeLayerId);
+    } else setCurrentRide({ ...currentRide, status });
+  };
+
+  // Update pozicionin e user-it nhart
   useEffect(() => {
     if (client) {
       watchId.current = navigator.geolocation.watchPosition(
@@ -308,7 +375,39 @@ export default function DriverMap({ userId }) {
       <h4>HEllo from driver map</h4>
       <div id="map" style={{ width: "100%", height: "500px" }} />
       {/* <button onClick={requestRide}>Request Ride</button> */}
-      <button>Picked Up</button>
+      {currentRide && (
+        <div>
+          <h4>
+            Ride:
+            <br />
+            Driver ID: {currentRide.driverId} <br />
+            User ID: {currentRide.userId} <br />
+            Rider Location: {currentRide.latitude} {currentRide.longitude}
+            <br />
+            Destination: {currentRide.destLatitude} {currentRide.destLongitude}
+            {currentRide.status === "PICKEDUP" ? (
+              <div>
+                <h4>RIDER HAS BEEN PICKED UP</h4>
+                <button onClick={() => handleStatusUpdate("COMPLETED")}>
+                  Ride COMPLETED
+                </button>
+              </div>
+            ) : (
+              <h4>PICKING UP THE RIDER....</h4>
+            )}
+          </h4>
+          {currentRide.status === "PICKINGUP" && (
+            <div>
+              <button onClick={() => handleStatusUpdate("PICKEDUP")}>
+                Picked Up
+              </button>
+              <button onClick={() => handleStatusUpdate("CANCELED")}>
+                Cancel Ride
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

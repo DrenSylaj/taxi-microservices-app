@@ -80,15 +80,6 @@ public class GeoLocationService {
             }
         }
 
-        if (!rideRequests.isEmpty()) {
-            for (int i = 0; i < rideRequests.size(); i++) {
-                System.out.println(rideRequests.get(i).getUserId());
-                System.out.println(rideRequests.get(i).getLatitude());
-                System.out.println(rideRequests.get(i).getLongitude());
-
-            }
-        }
-
         return rideRequests;
     }
 
@@ -115,6 +106,45 @@ public class GeoLocationService {
         return rideOffers;
     }
 
+    public RideAccepted getCurrentRideDriver(Long driverId) {
+        List<String> jsonList = hashOps.values(RIDE_ACCEPTED_KEY);
+
+        if (jsonList == null || jsonList.isEmpty())
+            return null;
+
+        for (String json : jsonList) {
+            try {
+                RideAccepted rideAccepted = objectMapper.readValue(json, RideAccepted.class);
+                if (Objects.equals(rideAccepted.getDriverId(), driverId)) {
+                    return rideAccepted;
+                }
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Error parsing rideAccepted JSON", e);
+            }
+        }
+
+        return null;
+    }
+
+    public RideAccepted getCurrentRideUser(Long userId) {
+        List<String> jsonList = hashOps.values(RIDE_ACCEPTED_KEY);
+
+        if (jsonList == null || jsonList.isEmpty())
+            return null;
+
+        for (String json : jsonList) {
+            try {
+                RideAccepted rideAccepted = objectMapper.readValue(json, RideAccepted.class);
+                if (Objects.equals(rideAccepted.getUserId(), userId)) {
+                    return rideAccepted;
+                }
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Error parsing rideAccepted JSON", e);
+            }
+        }
+
+        return null;
+    }
 
     private boolean isDriver(Long userId, Role role) {
         return userRepository.existsByIdAndRole(userId, role);
@@ -174,6 +204,32 @@ public class GeoLocationService {
                 }
             } catch (JsonProcessingException e) {
                 System.err.println("Failed to parse RideOffer JSON for userId " + userId);
+            }
+        }
+    }
+
+
+    public void updateStatus(RideAccepted rideAccepted) {
+        Map<String, String> rides = hashOps.entries(RIDE_ACCEPTED_KEY);
+
+        for (Map.Entry<String, String> entry : rides.entrySet()) {
+            String key = entry.getKey();
+            String json = entry.getValue();
+
+            try {
+                RideAccepted ride = objectMapper.readValue(json, RideAccepted.class);
+                ride.setStatus(rideAccepted.getStatus());
+                if (Objects.equals(ride.getUserId(), rideAccepted.getUserId()) &&
+                        (rideAccepted.getStatus().equals("CANCELED") || rideAccepted.getStatus().equals("COMPLETED"))) {
+                    System.out.println("Ride status of " + rideAccepted + " was changed to " + rideAccepted.getStatus());
+                    hashOps.delete(RIDE_ACCEPTED_KEY, key);
+                    driverClient.updateStatusByUserId("FREE", rideAccepted.getDriverId());
+                } else if (Objects.equals(ride.getUserId(), rideAccepted.getUserId()) && rideAccepted.getStatus().equals("PICKEDUP")) {
+                    ride.setStatus("PICKEDUP");
+                    hashOps.put(RIDE_ACCEPTED_KEY, key, objectMapper.writeValueAsString(ride));
+                }
+            } catch (JsonProcessingException e) {
+                System.err.println("Failed to parse RideAccepted JSON for " + rideAccepted.getUserId());
             }
         }
     }

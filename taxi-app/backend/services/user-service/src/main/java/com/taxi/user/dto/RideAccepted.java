@@ -20,4 +20,9 @@ public class RideAccepted {
 
     private Double latitude;
     private Double longitude;
+
+    private Double destLatitude;
+    private Double destLongitude;
+
+    private String status;
 }

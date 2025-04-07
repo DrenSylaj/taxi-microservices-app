@@ -1,9 +1,6 @@
 package com.taxi.user.controllers;
 
-import com.taxi.user.dto.LocationDTO;
-import com.taxi.user.dto.LocationUpdate;
-import com.taxi.user.dto.RideOffer;
-import com.taxi.user.dto.RideRequest;
+import com.taxi.user.dto.*;
 import com.taxi.user.services.GeoLocationService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.geo.Point;
@@ -42,7 +39,24 @@ public class LocationController {
     public List<RideOffer> getOffers(
             @RequestParam Long userId
     ) {
-        System.out.println("Hello there");
         return geoLocationService.getRideOffers(userId);
     }
+
+    @CrossOrigin(origins = "http://localhost:5173")
+    @GetMapping("/currentRideDriver")
+    public RideAccepted getCurrentRideDriver(
+            @RequestParam Long driverId
+    ) {
+        return geoLocationService.getCurrentRideDriver(driverId);
+    }
+
+    @CrossOrigin(origins = "http://localhost:5173")
+    @GetMapping("/currentRideUser")
+    public RideAccepted getCurrentRideUser(
+            @RequestParam Long userId
+    ) {
+        return geoLocationService.getCurrentRideUser(userId);
+    }
+
+
 }

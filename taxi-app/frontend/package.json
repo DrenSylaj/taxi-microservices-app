@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.0.1",
+    "antd": "^5.24.6",
+    "framer-motion": "^12.6.3",
+    "inter": "^2.1.0",
+    "lodash-es": "^4.17.21",
+    "poppins": "^0.1.1",
+    "public-sans": "^0.1.7-1",
+    "react-device-detect": "^2.2.3",
+    "roboto": "^0.8.2",
+    "simplebar": "^6.3.0",
+    "simplebar-react": "^3.3.0",
+    "swr": "^2.3.3"
+  }
+}

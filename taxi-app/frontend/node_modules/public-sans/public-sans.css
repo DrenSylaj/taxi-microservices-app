@@ -1,0 +1,163 @@
+
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: normal;
+	font-weight: 100;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-Thin.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-Thin.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-Thin.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: normal;
+	font-weight: 200;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-ExtraLight.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-ExtraLight.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-ExtraLight.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: normal;
+	font-weight: 300;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-Light.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-Light.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-Light.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: normal;
+	font-weight: 400;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-Regular.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-Regular.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-Regular.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: normal;
+	font-weight: 500;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-Medium.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-Medium.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-Medium.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: normal;
+	font-weight: 600;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-SemiBold.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-SemiBold.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-SemiBold.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: normal;
+	font-weight: 700;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-Bold.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-Bold.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-Bold.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: normal;
+	font-weight: 800;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-ExtraBold.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-ExtraBold.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-ExtraBold.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: normal;
+	font-weight: 900;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-Black.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-Black.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-Black.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: italic;
+	font-weight: 100;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-ThinItalic.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-ThinItalic.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-ThinItalic.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: italic;
+	font-weight: 200;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-ExtraLightItalic.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-ExtraLightItalic.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-ExtraLightItalic.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: italic;
+	font-weight: 300;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-LightItalic.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-LightItalic.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-LightItalic.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: italic;
+	font-weight: 400;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-Italic.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-Italic.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-Italic.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: italic;
+	font-weight: 500;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-MediumItalic.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-MediumItalic.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-MediumItalic.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: italic;
+	font-weight: 600;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-SemiBoldItalic.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-SemiBoldItalic.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-SemiBoldItalic.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: italic;
+	font-weight: 700;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-BoldItalic.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-BoldItalic.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-BoldItalic.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: italic;
+	font-weight: 800;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-ExtraBoldItalic.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-ExtraBoldItalic.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-ExtraBoldItalic.ttf) format("truetype")
+}
+@font-face {
+	font-family: "Public Sans Web";
+	font-style: italic;
+	font-weight: 900;
+	font-display: fallback;
+	src: url(./binaries/webfonts/PublicSans-BlackItalic.woff2) format("woff2"),
+	     url(./binaries/webfonts/PublicSans-BlackItalic.woff) format("woff"),
+	     url(./binaries/webfonts/PublicSans-BlackItalic.ttf) format("truetype")
+}

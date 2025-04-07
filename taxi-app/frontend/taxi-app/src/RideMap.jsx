@@ -11,20 +11,23 @@ export default function RideMap({ userId }) {
   const [destinationInput, setDestinationInput] = useState("");
   const [destination, setDestination] = useState(null);
   const [userMarker, setUserMarker] = useState(null);
+  const [currentRide, setCurrentRide] = useState(null);
   const watchId = useRef(null);
 
   const handleSetDestination = () => {
     const kosovoViewbox = {
-      left: 20.0,    
-      top: 43.0,     
-      right: 21.9,   
-      bottom: 41.8,  
+      left: 20.0,
+      top: 43.0,
+      right: 21.9,
+      bottom: 41.8,
     };
 
     fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
         destinationInput
-      )}&viewbox=${kosovoViewbox.left},${kosovoViewbox.top},${kosovoViewbox.right},${kosovoViewbox.bottom}&bounded=1`
+      )}&viewbox=${kosovoViewbox.left},${kosovoViewbox.top},${
+        kosovoViewbox.right
+      },${kosovoViewbox.bottom}&bounded=1`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -34,7 +37,7 @@ export default function RideMap({ userId }) {
           const lon = parseFloat(firstResult.lon);
           console.log("Destination coordinates:", lat, lon);
           setDestination({ latitude: lat, longitude: lon });
-  
+
           if (map) {
             new maplibregl.Marker({ color: "red" })
               .setLngLat([lon, lat])
@@ -48,7 +51,22 @@ export default function RideMap({ userId }) {
       .catch((err) => {
         console.error("Error fetching destination:", err);
       });
-  };  
+  };
+
+  useEffect(() => {
+    if (location && client) {
+      fetch(`http://localhost:8111/api/users/currentRideUser?userId=${userId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setCurrentRide(data);
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.error("Response error:", err.response);
+          } 
+        });
+    }
+  }, [client, location]);
 
   useEffect(() => {
     let markers = [];
@@ -66,7 +84,10 @@ export default function RideMap({ userId }) {
           handleAcceptRide(
             rideOffer.driverId,
             location.latitude,
-            location.longitude
+            location.longitude,
+            rideOffer.destLatitude,
+            rideOffer.destLongitude,
+            "PICKINGUP"
           );
         };
 
@@ -116,19 +137,19 @@ export default function RideMap({ userId }) {
       const newMarker = new maplibregl.Marker({ color: "blue" })
         .setLngLat([location.longitude, location.latitude])
         .addTo(map);
-  
+
       setUserMarker(newMarker);
-      const popup = new maplibregl.Popup({ offset: 25 })
-        .setText("Your Location");
+      const popup = new maplibregl.Popup({ offset: 25 }).setText(
+        "Your Location"
+      );
       newMarker.setPopup(popup);
     }
-  }, [location, map]); 
+  }, [location, map]);
   useEffect(() => {
     if (location && client) {
       fetch(`http://localhost:8111/api/users/rideOffers?userId=${userId}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setRideOffers(data);
         })
         .catch((err) => {
@@ -142,35 +163,56 @@ export default function RideMap({ userId }) {
           }
         });
     }
-  }, [location,client]);
+  }, [location, client]);
 
+  // subscriptionsssss.... 
   useEffect(() => {
-    if (client) {
-
-      client.subscribe(`/topic/user-${userId}`, (message) => {
-        const newRideOffer = JSON.parse(message.body);
-      
-        setRideOffers((prevOffers) => {
-          const exists = prevOffers.some((offer) =>
+    if (!client) return;
+  
+    const userSub = client.subscribe(`/topic/user-${userId}`, (message) => {
+      const newRideOffer = JSON.parse(message.body);
+  
+      setRideOffers((prevOffers) => {
+        const exists = prevOffers.some(
+          (offer) =>
             offer.userId === newRideOffer.userId &&
             offer.driverId === newRideOffer.driverId &&
             offer.latitude === newRideOffer.latitude &&
             offer.longitude === newRideOffer.longitude &&
             offer.destLatitude === newRideOffer.destLatitude &&
             offer.destLongitude === newRideOffer.destLongitude
-          );
-          return exists ? prevOffers : [...prevOffers, newRideOffer];
-        });
-      });
-      client.subscribe("/topic/remove-driver", (message) => {
-        const busyDriverId = JSON.parse(message.body);
-        setRideOffers((prevOffers) =>
-          prevOffers.filter((offer) => offer.driverId !== busyDriverId)
         );
+        return exists ? prevOffers : [...prevOffers, newRideOffer];
       });
-    }
+    });
+  
+    const removeSub = client.subscribe("/topic/remove-driver", (message) => {
+      const busyDriverId = JSON.parse(message.body);
+      setRideOffers((prevOffers) =>
+        prevOffers.filter((offer) => offer.driverId !== busyDriverId)
+      );
+    });
+  
+    const statusSub = client.subscribe(`/topic/status-${userId}`, (message) => {
+      const newStatus = JSON.parse(message.body);
+      console.log("Status update: ", newStatus);
+      if (
+        newStatus.status === "CANCELED" ||
+        newStatus.status === "COMPLETED"
+      ) {
+        setCurrentRide(null);
+        map.removeLayer(routeLayerId);
+      } else {
+        setCurrentRide(newStatus);
+      }
+    });
+  
+    return () => {
+      userSub.unsubscribe();
+      removeSub.unsubscribe();
+      statusSub.unsubscribe();
+    };
   }, [client]);
-
   const requestRide = () => {
     client.publish({
       destination: "/app/requestRide",
@@ -179,11 +221,18 @@ export default function RideMap({ userId }) {
         latitude: location.latitude,
         longitude: location.longitude,
         destLatitude: destination.latitude,
-        destLongitude: destination.longitude
+        destLongitude: destination.longitude,
       }),
     });
   };
-  const handleAcceptRide = (driverId, latitude, longitude) => {
+  const handleAcceptRide = (
+    driverId,
+    latitude,
+    longitude,
+    destLongitude,
+    destLatitude,
+    status
+  ) => {
     client.publish({
       destination: "/app/acceptRide",
       body: JSON.stringify({
@@ -191,10 +240,34 @@ export default function RideMap({ userId }) {
         driverId,
         latitude,
         longitude,
+        destLongitude,
+        destLatitude,
+        status,
       }),
-
     });
-      setRideOffers([]);
+    setRideOffers([]);
+    setCurrentRide({
+      userId,
+      driverId,
+      latitude,
+      longitude,
+      destLongitude,
+      destLatitude,
+      status,
+    });
+  };
+
+  // Status update
+  const handleStatusUpdate = (status) => {
+    if (!currentRide) return;
+
+    client.publish({
+      destination: "/app/status",
+      body: JSON.stringify({ ...currentRide, status }),
+    });
+
+    if (status === "CANCELED" || status === "COMPLETED") setCurrentRide(null);
+    else setCurrentRide({ ...currentRide, status });
   };
   useEffect(() => {
     if (client) {
@@ -203,7 +276,6 @@ export default function RideMap({ userId }) {
           const { latitude, longitude } = pos.coords;
           // console.log('Updated location:', latitude, longitude);
           setLocation({ latitude, longitude });
-
           client.publish({
             destination: "/app/updateLocation",
             body: JSON.stringify({
@@ -217,7 +289,7 @@ export default function RideMap({ userId }) {
         {
           enableHighAccuracy: true,
           maximumAge: 0,
-          timeout: 5000
+          timeout: 5000,
         }
       );
     }
@@ -229,16 +301,30 @@ export default function RideMap({ userId }) {
   }, [client]);
   return (
     <div>
-      <h4>HEllo from rider map</h4>
+      <h4>Hello from rider map</h4>
       <div id="map" style={{ width: "100%", height: "500px" }} />
-      <button onClick={requestRide}>Request Ride</button>
-      <input
-        type="text"
-        placeholder="Enter destination"
-        value={destinationInput}
-        onChange={(e) => setDestinationInput(e.target.value)}
-      />
-      <button onClick={handleSetDestination}>Set Destination</button>
+  
+      {!currentRide ? (
+        <div>
+          <button onClick={requestRide}>Request Ride</button>
+          <input
+            type="text"
+            placeholder="Enter destination"
+            value={destinationInput}
+            onChange={(e) => setDestinationInput(e.target.value)}
+          />
+          <button onClick={handleSetDestination}>Set Destination</button>
+        </div>
+      ) : currentRide.status === "PICKEDUP" ? (
+        <h4>You are on Ride</h4>
+      ) : (
+        <div>
+          <h4>Waiting for pickup....</h4>
+          <button onClick={() => handleStatusUpdate("CANCELED")}>
+            Cancel Ride
+          </button>
+        </div>
+      )}
     </div>
   );
 }

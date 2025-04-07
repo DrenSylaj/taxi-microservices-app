@@ -18,4 +18,5 @@ public class RideOffer {
     private Double longitude;
     private Double destLatitude;
     private Double destLongitude;
+
 }

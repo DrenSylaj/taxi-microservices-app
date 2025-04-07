@@ -10,7 +10,6 @@
 
 // assets
 
-
 // avatar style
 // const avatarSX = {
 //   width: 36,
@@ -29,21 +28,34 @@
 // };
 
 import MapView from "../../components/MapView";
-import {Box} from '@mui/material'
+import { Box } from "@mui/material";
 import ClosestDrivers from "../../components/ClosestDrivers";
+import "@fontsource/poppins"
+
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 export default function DashboardDefault() {
+
+
   return (
     <>
-    <Box sx={{ height: '100%', width: '100%', borderRadius: '30px',
-      backgroundColor: 'white',
-      overflow: 'hidden' }}>
-      <MapView />
-    </Box>
-    <ClosestDrivers/>
-    </>
+      <Box
+        sx={{
+          height: "100%",
+          width: "100%",
+          borderRadius: "30px",
+          backgroundColor: "white",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <MapView />
 
+        
+      </Box>
+
+      <ClosestDrivers />
+    </>
   );
 }

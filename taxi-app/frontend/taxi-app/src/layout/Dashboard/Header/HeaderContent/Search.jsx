@@ -26,6 +26,23 @@ export default function Search() {
             'aria-label': 'weight'
           }}
           placeholder="Ctrl + K"
+          
+          sx={{
+            backgroundColor: 'white',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'grey.500',
+              borderWidth: '2px',      
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'grey.600', 
+              borderWidth: '2px',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'grey.700', 
+              borderWidth: '2px',
+            },
+            color: 'black', 
+          }}
         />
       </FormControl>
     </Box>

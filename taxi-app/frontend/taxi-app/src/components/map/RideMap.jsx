@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import useWebSocket from "./useWebSocket";
+import RequestButton from "./buttons/RideMapBar";
+import ClosestDrivers from "../ClosestDrivers";
 
 export default function RideMap({ userId }) {
   const { updates, client } = useWebSocket(userId);
@@ -13,6 +15,8 @@ export default function RideMap({ userId }) {
   const [userMarker, setUserMarker] = useState(null);
   const [currentRide, setCurrentRide] = useState(null);
   const watchId = useRef(null);
+  const [destinationMarker, setDestinationMarker] = useState(null);
+
 
   const handleSetDestination = () => {
     const kosovoViewbox = {
@@ -39,10 +43,13 @@ export default function RideMap({ userId }) {
           setDestination({ latitude: lat, longitude: lon });
 
           if (map) {
-            new maplibregl.Marker({ color: "red" })
+            if (destinationMarker) {
+              destinationMarker.remove();
+            }    
+            setDestinationMarker(new maplibregl.Marker({ color: "red" })
               .setLngLat([lon, lat])
               .setPopup(new maplibregl.Popup().setText("Destination"))
-              .addTo(map);
+              .addTo(map));
           }
         } else {
           alert("Destination not found in Kosovo.");
@@ -63,7 +70,7 @@ export default function RideMap({ userId }) {
         .catch((err) => {
           if (err.response) {
             console.error("Response error:", err.response);
-          } 
+          }
         });
     }
   }, [client, location]);
@@ -120,14 +127,41 @@ export default function RideMap({ userId }) {
     if (location && !map) {
       const mapInstance = new maplibregl.Map({
         container: "map",
-        style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
         center: [location.longitude, location.latitude],
-        zoom: 13,
+        zoom: 15,
+        style: {
+          version: 8,
+          sources: {
+            osm: {
+              type: "raster",
+              tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+              tileSize: 256,
+              attribution: "&copy; OpenStreetMap contributors",
+            },
+          },
+          layers: [
+            {
+              id: "osm",
+              type: "raster",
+              source: "osm",
+            },
+          ],
+        },
       });
-
       setMap(mapInstance);
     }
   }, [location]);
+
+  useEffect(() => {
+    if (map) {
+      map.flyTo({
+        center: [location.longitude, location.latitude],
+        essential: true,
+        zoom: 15,
+      });
+    }
+  }, [location]);
+
   // Your Marker!
   useEffect(() => {
     if (map && userId && location) {
@@ -165,13 +199,13 @@ export default function RideMap({ userId }) {
     }
   }, [location, client]);
 
-  // subscriptionsssss.... 
+  // subscriptionsssss....
   useEffect(() => {
     if (!client) return;
-  
+
     const userSub = client.subscribe(`/topic/user-${userId}`, (message) => {
       const newRideOffer = JSON.parse(message.body);
-  
+
       setRideOffers((prevOffers) => {
         const exists = prevOffers.some(
           (offer) =>
@@ -185,28 +219,25 @@ export default function RideMap({ userId }) {
         return exists ? prevOffers : [...prevOffers, newRideOffer];
       });
     });
-  
+
     const removeSub = client.subscribe("/topic/remove-driver", (message) => {
       const busyDriverId = JSON.parse(message.body);
       setRideOffers((prevOffers) =>
         prevOffers.filter((offer) => offer.driverId !== busyDriverId)
       );
     });
-  
+
     const statusSub = client.subscribe(`/topic/status-${userId}`, (message) => {
       const newStatus = JSON.parse(message.body);
       console.log("Status update: ", newStatus);
-      if (
-        newStatus.status === "CANCELED" ||
-        newStatus.status === "COMPLETED"
-      ) {
+      if (newStatus.status === "CANCELED" || newStatus.status === "COMPLETED") {
         setCurrentRide(null);
         map.removeLayer(routeLayerId);
       } else {
         setCurrentRide(newStatus);
       }
     });
-  
+
     return () => {
       userSub.unsubscribe();
       removeSub.unsubscribe();
@@ -301,30 +332,18 @@ export default function RideMap({ userId }) {
   }, [client]);
   return (
     <div>
-      <h4>Hello from rider map</h4>
-      <div id="map" style={{ width: "100%", height: "500px" }} />
-  
-      {!currentRide ? (
-        <div>
-          <button onClick={requestRide}>Request Ride</button>
-          <input
-            type="text"
-            placeholder="Enter destination"
-            value={destinationInput}
-            onChange={(e) => setDestinationInput(e.target.value)}
-          />
-          <button onClick={handleSetDestination}>Set Destination</button>
-        </div>
-      ) : currentRide.status === "PICKEDUP" ? (
-        <h4>You are on Ride</h4>
-      ) : (
-        <div>
-          <h4>Waiting for pickup....</h4>
-          <button onClick={() => handleStatusUpdate("CANCELED")}>
-            Cancel Ride
-          </button>
-        </div>
-      )}
+      
+      <ClosestDrivers />
+
+      <div id="map" style={{ width: "100%", height: "83vh" }} />
+
+         <RequestButton
+         requestRide={requestRide}
+         setDestinationInput={setDestinationInput}
+         handleSetDestination={handleSetDestination}
+         handleStatusUpdate={handleStatusUpdate}
+         currentRide={currentRide}
+       />
     </div>
   );
 }

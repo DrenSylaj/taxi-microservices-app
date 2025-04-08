@@ -11,7 +11,6 @@ import Header from './Header';
 import Footer from './Footer';
 import Loader from '../../components/Loader';
 import Breadcrumbs from '../../components/@extended/Breadcrumbs';
-import DriverMap from '../../DriverMap';
 import MapView from '../../components/MapView';
 import DashboardDefault from '../../pages/dashboard/default';
 

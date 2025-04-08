@@ -23,7 +23,7 @@ const MainRoutes = {
   element: <DashboardLayout />,
   children: [
     {
-      path: '/',
+      path: '/:userId',
       element: <DashboardDefault />
     },
     {

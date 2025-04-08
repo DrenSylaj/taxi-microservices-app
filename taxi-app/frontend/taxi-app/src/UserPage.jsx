@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom';
-import DriverMap from './DriverMap';
-import RideMap from './RideMap';
+import DriverMap from './components/map/DriverMap';
+import RideMap from './components/map/RideMap';
 
 const UserPage = () => {
     const { userId } = useParams(); 
@@ -9,7 +9,6 @@ const UserPage = () => {
 
   return (
     <>
-    <h1>User ID: {userId}</h1>
     {userIdNumber === 2 || userIdNumber === 4 ? <DriverMap userId={userIdNumber}/> : <RideMap userId={userIdNumber}/>}
   </>  )
 }

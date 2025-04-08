@@ -31,6 +31,7 @@ import MapView from "../../components/MapView";
 import { Box } from "@mui/material";
 import ClosestDrivers from "../../components/ClosestDrivers";
 import "@fontsource/poppins"
+import UserPage from "../../UserPage";
 
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
@@ -50,12 +51,11 @@ export default function DashboardDefault() {
           overflow: "hidden",
         }}
       >
-        <MapView />
-
-        
+        {/* <MapView /> */}
+        <UserPage />
       </Box>
 
-      <ClosestDrivers />
+      {/* <ClosestDrivers /> */}
     </>
   );
 }

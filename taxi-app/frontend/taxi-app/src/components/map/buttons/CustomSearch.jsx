@@ -1,0 +1,53 @@
+import FormControl from '@mui/material/FormControl';
+import InputAdornment from '@mui/material/InputAdornment';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Box from '@mui/material/Box';
+
+// assets
+import SearchOutlined from '@ant-design/icons/SearchOutlined';
+
+// ==============================|| HEADER CONTENT - SEARCH ||============================== //
+
+export default function CustomSearch({ setInput }) {
+    const handleChange = (e) => {
+      setInput(e.target.value);
+    };
+  
+    return (
+      <Box>
+        <FormControl sx={{ width: { xs: '100%', md: 224 } }}>
+          <OutlinedInput
+            size="small"
+            id="header-search"
+            onChange={handleChange} 
+            startAdornment={
+              <InputAdornment position="start" sx={{ mr: -0.5 }}>
+                <SearchOutlined />
+              </InputAdornment>
+            }
+            aria-describedby="header-search-text"
+            inputProps={{
+              'aria-label': 'weight'
+            }}
+            placeholder="Your Destination..."
+            sx={{
+              backgroundColor: 'white',
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'grey.500',
+                borderWidth: '2px',      
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'grey.600', 
+                borderWidth: '2px',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'grey.700', 
+                borderWidth: '2px',
+              },
+              color: 'black', 
+            }}
+          />
+        </FormControl>
+      </Box>
+    );
+  }

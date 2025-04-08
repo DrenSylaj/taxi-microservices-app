@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import useWebSocket from "./useWebSocket";
+import DriverMapBar from "./buttons/DriverMapBar";
 
 export default function DriverMap({ userId }) {
   const { updates, client } = useWebSocket(userId);
@@ -41,11 +42,6 @@ export default function DriverMap({ userId }) {
   let routeLayerId = "route-line";
 
   const drawRoute = async (from, to) => {
-    console.log(`from.latitude:`, from.latitude);
-    console.log(`from.longitude:`, from.longitude);
-    console.log(`to.latitude:`, to.latitude);
-    console.log(`to.longitude:`, to.longitude);
-
     const url = `https://router.project-osrm.org/route/v1/driving/${from.latitude},${from.longitude};${to.latitude},${to.longitude}?overview=full&geometries=geojson`;
 
     try {
@@ -130,15 +126,44 @@ export default function DriverMap({ userId }) {
     }
   }, [client, location]);
 
+  // useEffect(() => {
+  //   if (location && !map) {
+  //     const mapInstance = new maplibregl.Map({
+  //       container: "map",
+  //       style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+  //       center: [location.longitude, location.latitude],
+  //       zoom: 13,
+  //     });
+
+  //     setMap(mapInstance);
+  //   }
+  // }, [location]);
+
   useEffect(() => {
     if (location && !map) {
       const mapInstance = new maplibregl.Map({
         container: "map",
-        style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
         center: [location.longitude, location.latitude],
-        zoom: 13,
+        zoom: 15,
+        style: {
+          version: 8,
+          sources: {
+            osm: {
+              type: "raster",
+              tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+              tileSize: 256,
+              attribution: "&copy; OpenStreetMap contributors",
+            },
+          },
+          layers: [
+            {
+              id: "osm",
+              type: "raster",
+              source: "osm",
+            },
+          ],
+        },
       });
-
       setMap(mapInstance);
     }
   }, [location]);
@@ -338,6 +363,16 @@ export default function DriverMap({ userId }) {
     } else setCurrentRide({ ...currentRide, status });
   };
 
+  useEffect(() => {
+    if (map) {
+      map.flyTo({
+        center: [location.longitude, location.latitude],
+        essential: true,
+        zoom: 15,
+      });
+    }
+  }, [location])
+
   // Update pozicionin e user-it nhart
   useEffect(() => {
     if (client) {
@@ -372,10 +407,9 @@ export default function DriverMap({ userId }) {
 
   return (
     <div>
-      <h4>HEllo from driver map</h4>
-      <div id="map" style={{ width: "100%", height: "500px" }} />
+      <div id="map" style={{ width: "100%", height: "83vh" }} />
       {/* <button onClick={requestRide}>Request Ride</button> */}
-      {currentRide && (
+      {/* {currentRide && (
         <div>
           <h4>
             Ride:
@@ -407,7 +441,9 @@ export default function DriverMap({ userId }) {
             </div>
           )}
         </div>
-      )}
+      )} */}
+
+      <DriverMapBar currentRide={currentRide} handleStatusUpdate={handleStatusUpdate}/>
     </div>
   );
 }

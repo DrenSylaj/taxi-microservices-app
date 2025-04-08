@@ -86,7 +86,7 @@ export default function ClosestDrivers() {
   ];
 
   return (
-    <div className="fixed mx-auto mt-2 right-12 z-50">
+    <div className="fixed mx-auto mt-2 right-12 z-1000">
       {isVisible ? (
         <div className="w-80 bg-white rounded-xl shadow-lg p-1 transform transition-all duration-300 ease-in-out">
           <div className="flex justify-between items-center bg-gray-50 p-2 border-b rounded-tl-lg rounded-tr-lg">

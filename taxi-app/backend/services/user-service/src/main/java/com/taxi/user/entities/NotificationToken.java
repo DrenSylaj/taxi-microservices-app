@@ -7,18 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-
+@NoArgsConstructor
 @Entity
-public class Token {
+@Builder
+public class NotificationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String token;
-    public boolean revoked;
-    public boolean expired;
 
     @ManyToOne(fetch = FetchType.LAZY)
     public User user;

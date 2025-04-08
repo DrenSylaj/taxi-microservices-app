@@ -13,6 +13,7 @@ function SideBar({ children, patharray }) {
         style={{ width: opened ? "20vw" : "4vw" }}
       >
         <Hamburger color="#FFFFFF" toggled={opened} toggle={setOpened} />
+        <Link to={"/1"}>asd</Link>
 
         {opened && (
           <div className="flex flex-col mt-4 text-white">

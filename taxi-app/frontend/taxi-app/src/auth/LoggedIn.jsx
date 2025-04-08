@@ -7,7 +7,7 @@ import {
   useParams,
 } from "react-router-dom";
 
-import SideBar from "../Components/SideBar";
+import SideBar from "../components/SideBar";
 import pathArray from "../Routes/Path.jsx";
 
 function LoggedIn() {

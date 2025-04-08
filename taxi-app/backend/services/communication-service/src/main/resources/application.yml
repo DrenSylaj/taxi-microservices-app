@@ -6,7 +6,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka
 
 server:
-  port: 8444
+  port: 8314
 
 spring:
   websocket:
@@ -19,7 +19,7 @@ spring:
   profiles:
     active: native
   application:
-    name: ride
+    name: communication
 
   data:
     mongodb:

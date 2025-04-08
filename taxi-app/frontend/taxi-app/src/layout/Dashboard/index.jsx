@@ -48,7 +48,7 @@ export default function DashboardLayout() {
 
       }}
     >
-      <DashboardDefault/>
+      <Outlet/>
 
 
       <Footer />

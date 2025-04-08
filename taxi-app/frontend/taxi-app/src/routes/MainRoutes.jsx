@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project imports
 import Loadable from '../components/Loadable';
 import DashboardLayout from '../layout/Dashboard';
+import ChatBody from '../components/chat/ChatBody';
 
 // render- Dashboard
 const DashboardDefault = Loadable(lazy(() => import('../pages/dashboard/default')));
@@ -34,6 +35,10 @@ const MainRoutes = {
         }
       ]
     },
+    {
+      path: 'chat',
+      element: <ChatBody/>
+    }
     // {
     //   path: 'typography',
     //   element: <Typography />
@@ -50,7 +55,8 @@ const MainRoutes = {
     //   path: 'sample-page',
     //   element: <SamplePage />
     // }
-  ]
+  ],
+  
 };
 
 export default MainRoutes;

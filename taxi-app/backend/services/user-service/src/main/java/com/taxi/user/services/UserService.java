@@ -79,6 +79,7 @@ public class UserService {
                 .password(passwordEncoder.encode(userDTO.getPassword()))
                 .address(userDTO.getAddress())
                 .city(userDTO.getCity())
+                .phoneNumber(userDTO.getPhoneNumber())
                 .gender(userDTO.isGender())
                 .birthDate(userDTO.getBirthDate())
                 .role(Role.CUSTOMER)

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { PlusCircleFilled } from "@ant-design/icons";
+import { PlusCircleOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { Box, Typography } from '@mui/material';
 
 
@@ -108,7 +108,7 @@ const MapView = () => {
                   fontFamily: 'Segoe UI'
                 }}
               >
-                Request Ride
+                REQUEST RIDE
               </Typography>
             </Box>
 
@@ -122,13 +122,9 @@ const MapView = () => {
                 px: 2,
                 py: 2,
                 borderRadius: "0 12px 12px 0",
-                transition: "background-color 0.2s ease",
-                ":hover": {
-                  backgroundColor: "#e3f2fd",
-                },
-              }}
+                }}
             >
-              <PlusCircleFilled
+              <PlusCircleOutlined
                 style={{
                   color: "#1976d2",
                   fontSize: "24px",

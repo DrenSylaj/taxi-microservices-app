@@ -184,4 +184,18 @@ public class DriverService {
 
         return driver.getStatus().toString();
     }
+
+    public DriverDTO getDriverByUserId(Long userId) {
+        Driver driver = repository.findByUserId(userId);
+
+        return DriverDTO.builder()
+                .userId(driver.getUserId())
+                .licenseNumber(driver.getCar().getPlateNumber())
+                .carModel(driver.getCar().getModel())
+                .numberOfSeats(driver.getCar().getNumberOfSeats())
+                .carPlate(driver.getCar().getPlateNumber())
+                .carYear(driver.getCar().getYear())
+                .carColor(driver.getCar().getColor())
+                .build();
+    }
 }

@@ -42,7 +42,7 @@ const RideMapBar = ({
               alignItems: "center",
               justifyContent: "center",
               gap: 0.3,
-              marginRight: {xs:5, sm:30, lg:45},
+              marginRight: {xs:5, sm:30, lg:60},
               minWidth: "250px",
               maxWidth: { xs: "100%", sm: "500px" }, 
             }}

@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import useWebSocket from "./useWebSocket";
-import RequestButton from "./buttons/RideMapBar";
-import ClosestDrivers from "../ClosestDrivers";
+import RequestButton from "./mapComponents/RideMapBar";
+import SelectedDriver from "./mapComponents/SelectedDriver";
 
 export default function RideMap({ userId }) {
   const { updates, client } = useWebSocket(userId);
@@ -12,11 +12,11 @@ export default function RideMap({ userId }) {
   const [rideOffers, setRideOffers] = useState([]);
   const [destinationInput, setDestinationInput] = useState("");
   const [destination, setDestination] = useState(null);
+  const [selectedRideOffer, setSelectedRideOffer] = useState(null);
   const [userMarker, setUserMarker] = useState(null);
   const [currentRide, setCurrentRide] = useState(null);
   const watchId = useRef(null);
   const [destinationMarker, setDestinationMarker] = useState(null);
-
 
   const handleSetDestination = () => {
     const kosovoViewbox = {
@@ -45,11 +45,13 @@ export default function RideMap({ userId }) {
           if (map) {
             if (destinationMarker) {
               destinationMarker.remove();
-            }    
-            setDestinationMarker(new maplibregl.Marker({ color: "red" })
-              .setLngLat([lon, lat])
-              .setPopup(new maplibregl.Popup().setText("Destination"))
-              .addTo(map));
+            }
+            setDestinationMarker(
+              new maplibregl.Marker({ color: "red" })
+                .setLngLat([lon, lat])
+                .setPopup(new maplibregl.Popup().setText("Destination"))
+                .addTo(map)
+            );
           }
         } else {
           alert("Destination not found in Kosovo.");
@@ -82,38 +84,39 @@ export default function RideMap({ userId }) {
       rideOffers.forEach((rideOffer) => {
         const popupContent = document.createElement("div");
         popupContent.className = "popup-content";
-        popupContent.innerHTML = `<p>Driver ID: ${rideOffer.driverId}</p>`;
+        popupContent.innerHTML = `<p>Selected Driver</p>`;
 
-        const acceptButton = document.createElement("button");
-        acceptButton.textContent = "accept ride";
-        acceptButton.className = "accept-button";
-        acceptButton.onclick = () => {
-          handleAcceptRide(
-            rideOffer.driverId,
-            location.latitude,
-            location.longitude,
-            rideOffer.destLatitude,
-            rideOffer.destLongitude,
-            "PICKINGUP"
-          );
-        };
+        // const acceptButton = document.createElement("button");
+        // acceptButton.textContent = "accept ride";
+        // acceptButton.className = "accept-button";
+        // acceptButton.onclick = () => {
+        //   handleAcceptRide(
+        //     rideOffer.driverId,
+        //     location.latitude,
+        //     location.longitude,
+        //     rideOffer.destLatitude,
+        //     rideOffer.destLongitude,
+        //     "PICKINGUP"
+        //   );
+        // };
 
-        popupContent.appendChild(acceptButton);
+        // popupContent.appendChild(acceptButton);
+
+        const popup = new maplibregl.Popup({ offset: 25 })
+        .setDOMContent(popupContent)
+        .setMaxWidth("200px");
 
         const marker = new maplibregl.Marker({ color: "green" })
           .setLngLat([rideOffer.longitude, rideOffer.latitude])
+          .setPopup(popup)
           .addTo(map);
 
-        const popup = new maplibregl.Popup({ offset: 25 })
-          .setDOMContent(popupContent)
-          .setMaxWidth("200px");
-
-        marker.setPopup(popup);
         marker.getElement().addEventListener("click", () => {
-          marker.togglePopup();
+          setSelectedRideOffer(rideOffer);
+          
         });
 
-        popup.addTo(map);
+        // popup.addTo(map);
         markers.push(marker);
       });
     }
@@ -332,18 +335,25 @@ export default function RideMap({ userId }) {
   }, [client]);
   return (
     <div>
-      
-      <ClosestDrivers />
-
       <div id="map" style={{ width: "100%", height: "83vh" }} />
+      {(selectedRideOffer && location) && (
+        <SelectedDriver
+          location={location}
+          driverId={selectedRideOffer.driverId}
+          selectedRideOffer={selectedRideOffer}
+          setSelectedRideOffer={setSelectedRideOffer}
+          handleAcceptRide={handleAcceptRide}
+          visible={true}
+        />
+      )}
 
-         <RequestButton
-         requestRide={requestRide}
-         setDestinationInput={setDestinationInput}
-         handleSetDestination={handleSetDestination}
-         handleStatusUpdate={handleStatusUpdate}
-         currentRide={currentRide}
-       />
+      <RequestButton
+        requestRide={requestRide}
+        setDestinationInput={setDestinationInput}
+        handleSetDestination={handleSetDestination}
+        handleStatusUpdate={handleStatusUpdate}
+        currentRide={currentRide}
+      />
     </div>
   );
 }

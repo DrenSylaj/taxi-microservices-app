@@ -29,7 +29,7 @@
 
 import MapView from "../../components/MapView";
 import { Box } from "@mui/material";
-import ClosestDrivers from "../../components/ClosestDrivers";
+import ClosestDrivers from "../../components/map/mapComponents/SelectedDriver";
 import "@fontsource/poppins"
 import UserPage from "../../UserPage";
 
@@ -55,7 +55,6 @@ export default function DashboardDefault() {
         <UserPage />
       </Box>
 
-      {/* <ClosestDrivers /> */}
     </>
   );
 }

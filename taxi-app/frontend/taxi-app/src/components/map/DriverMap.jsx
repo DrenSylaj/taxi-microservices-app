@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import useWebSocket from "./useWebSocket";
-import DriverMapBar from "./buttons/DriverMapBar";
+import DriverMapBar from "./mapComponents/DriverMapBar";
 
 export default function DriverMap({ userId }) {
   const { updates, client } = useWebSocket(userId);
@@ -36,7 +36,6 @@ export default function DriverMap({ userId }) {
       }),
     });
 
-    console.log("Ride offer sent:", { userId, latitude, longitude });
   };
 
   let routeLayerId = "route-line";
@@ -224,24 +223,17 @@ export default function DriverMap({ userId }) {
       const removeSub = client.subscribe("/topic/remove-user", (message) => {
         // INFO: payload osht rideAccepted(userId,driverId etc...)
         const rideAccepted = JSON.parse(message.body);
-        console.log("Accepted Ride:", JSON.stringify(rideAccepted, null, 2));
-        console.log(
-          "Current Ride update:",
-          JSON.stringify(currentRide, null, 2)
-        );
+   
         if (userId == rideAccepted.driverId) {
           setCurrentRide(rideAccepted);
           setRideRequests([]);
-          console.log(
-            `RideRequests of the Accepted Ride Driver: ${rideRequests}`
-          );
+          
         } else {
           setRideRequests((prevRequests) => {
             return prevRequests.filter(
               (req) => req.userId !== rideAccepted.userId
             );
           });
-          console.log(`RideRequests of the other Drivers: ${rideRequests}`);
         }
       });
       // Ndegjo per ndryshime tstatusit (status)
@@ -249,7 +241,6 @@ export default function DriverMap({ userId }) {
         `/topic/status-${userId}`,
         (message) => {
           const newStatus = JSON.parse(message.body);
-          console.log("Status update: ", newStatus);
           if (
             newStatus.status === "CANCELED" ||
             newStatus.status === "COMPLETED"

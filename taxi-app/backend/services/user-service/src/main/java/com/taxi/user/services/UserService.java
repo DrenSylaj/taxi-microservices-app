@@ -1,5 +1,8 @@
 package com.taxi.user.services;
 
+import com.taxi.user.clients.DriverClient;
+import com.taxi.user.dto.DriverDTO;
+import com.taxi.user.dto.DriverFullDTO;
 import com.taxi.user.dto.UserDTO;
 import com.taxi.user.entities.Role;
 import com.taxi.user.entities.User;
@@ -27,10 +30,12 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DriverClient driverClient;
 
     public Optional<User> getUserById(Long id){
         return userRepository.findById(id);
     }
+
 
     public void deleteUserById(Long id){
         if(userRepository.existsById(id)){
@@ -98,6 +103,27 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public DriverFullDTO getFullDriver(Long userId) {
+        DriverDTO driver = driverClient.getDriverByUserid(userId);
+        User user = userRepository.getReferenceById(userId);
+
+        return DriverFullDTO.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .city(user.getCity())
+                .birthDate(user.getBirthDate())
+                .licenseNumber(driver.getLicenseNumber())
+                .model(driver.getCarModel())
+                .numberOfSeats(driver.getNumberOfSeats())
+                .plateNumber(driver.getCarPlate())
+                .year(driver.getCarYear())
+                .color(driver.getCarColor())
+                .build();
+    }
+
 
 
 }

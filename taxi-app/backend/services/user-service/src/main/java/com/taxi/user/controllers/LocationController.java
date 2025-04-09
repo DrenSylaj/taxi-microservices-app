@@ -2,6 +2,7 @@ package com.taxi.user.controllers;
 
 import com.taxi.user.dto.*;
 import com.taxi.user.services.GeoLocationService;
+import com.taxi.user.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.geo.Point;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 public class LocationController {
 
     private final GeoLocationService geoLocationService;
+    private final UserService userService;
 
     @GetMapping("/{userId}/location")
     public ResponseEntity<LocationDTO> getUserLocation(@PathVariable Long userId) {
@@ -57,6 +59,20 @@ public class LocationController {
     ) {
         return geoLocationService.getCurrentRideUser(userId);
     }
+
+    @CrossOrigin(origins = "http://localhost:5173")
+    @GetMapping("/driverInfo/{userId}")
+    public DriverFullDTO getDriverFullInfo(
+            @PathVariable Long userId
+    ) {
+        return userService.getFullDriver(userId);
+    }
+
+//    @CrossOrigin(origins = "http://localhost:5173")
+//    @GetMapping("/activeCloseBy")
+//    public List<Long> activeCloseBy(@RequestBody RideRequest request) {
+//       return geoLocationService.activeCloseBy(request);
+//    }
 
 
 }

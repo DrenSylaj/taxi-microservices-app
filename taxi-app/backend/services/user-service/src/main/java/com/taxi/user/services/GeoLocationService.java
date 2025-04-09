@@ -13,6 +13,7 @@ import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.core.ListOperations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ public class GeoLocationService {
     private final HashOperations<String, String, String> hashOps;
     private final GeoOperations<String, String> geoOps;
     private final ObjectMapper objectMapper;
+    private final SimpMessagingTemplate messagingTemplate;
     @Autowired
     private ListOperations<String, String> listOps;
     private RedisTemplate<String, String> redisTemplate;

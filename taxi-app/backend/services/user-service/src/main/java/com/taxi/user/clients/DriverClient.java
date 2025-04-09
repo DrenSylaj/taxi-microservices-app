@@ -1,5 +1,6 @@
 package com.taxi.user.clients;
 
+import com.taxi.user.dto.DriverDTO;
 import com.taxi.user.dto.RideAccepted;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,5 +16,8 @@ public interface DriverClient {
 
     @GetMapping("/getStatusByUserId/{id}")
     String getStatusByUserId(@PathVariable Long id);
+
+    @GetMapping("/getDriverByUserid/{userId}")
+    DriverDTO getDriverByUserid(@PathVariable Long userId);
 
 }

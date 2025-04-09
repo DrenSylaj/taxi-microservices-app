@@ -81,4 +81,6 @@ public class DriverController {
         return driverService.rejectVerification(id);
     }
 
+    @GetMapping("/getDriverByUserid/{userId}")
+    public DriverDTO getDriverByUserid(@PathVariable Long userId) { return driverService.getDriverByUserId(userId); }
 }
